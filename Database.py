@@ -4,8 +4,18 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import pandas as pd
 
+"""
+For databaseAccess, please create a new py file name databaseAccess and add
+databaseAccess = {
+    "username": "<username>",
+    "password": "<password>"
+}
+into it. And replace <username> and <password> with you database accces credential
+"""
+from databaseAccess import databaseAccess
+
 def getDatabase():
-    uri = "mongodb+srv://<username>:<password>@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
+    uri = f"mongodb+srv://{databaseAccess["username"]}:{databaseAccess["password"]}@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
     # Create a new client and connect to the server
     client = MongoClient(uri)
     
