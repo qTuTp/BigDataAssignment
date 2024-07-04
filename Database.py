@@ -5,7 +5,7 @@ from pymongo.server_api import ServerApi
 import pandas as pd
 
 def getDatabase():
-    uri = "mongodb+srv://qTuTp:123321@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
+    uri = "mongodb+srv://<username>:<password>@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
     # Create a new client and connect to the server
     client = MongoClient(uri)
     
