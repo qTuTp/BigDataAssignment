@@ -7,6 +7,7 @@ import json
 
 # %% Get Case Malaysia
 dbName = getDatabase()
+
 collection = dbName["caseMalaysia"]
 cursor = collection.find({})
 documents = list(cursor)
@@ -78,7 +79,6 @@ caseMalaysiaDF.describe()
 
 # %% Add sequential date
 # Reset index to start from 0
-caseMalaysiaDF = caseMalaysiaDF.reset_index(drop=True)
 
 caseMalaysiaDF['sequentialDay'] = caseMalaysiaDF.index + 1
 
@@ -191,7 +191,6 @@ vaxMalaysiaDF.describe()
 
 # %% Add sequential date
 # Reset index to start from 0
-vaxMalaysiaDF = vaxMalaysiaDF.reset_index(drop=True)
 
 vaxMalaysiaDF['sequentialDay'] = vaxMalaysiaDF.index + 1
 
@@ -281,3 +280,159 @@ collectionCaseStateClean.insert_many(caseStateJSON)
 
 #######################################################################################
 
+# %% Preprocessing for vax state
+# Get Vax State
+collection = dbName["vaxState"]
+cursor = collection.find({})
+documents = list(cursor)
+
+vaxStateDF = pd.DataFrame(documents)
+vaxStateDF = vaxStateDF.drop(columns=['_id'])
+
+# %% Print Detail
+print("CASE MALAYSIA INFO: ")
+vaxStateDF.info()
+print("CASE MALAYSIA DESCRIBE: ")
+vaxStateDF.describe()
+
+print(vaxStateDF.isnull().sum())
+
+# %%Remove unuse column
+vaxStateDF = vaxStateDF.drop(columns=['pfizer1'])
+vaxStateDF = vaxStateDF.drop(columns=['pfizer2'])
+vaxStateDF = vaxStateDF.drop(columns=['pfizer3'])
+vaxStateDF = vaxStateDF.drop(columns=['pfizer4'])
+vaxStateDF = vaxStateDF.drop(columns=['sinovac1'])
+vaxStateDF = vaxStateDF.drop(columns=['sinovac2'])
+vaxStateDF = vaxStateDF.drop(columns=['sinovac3'])
+vaxStateDF = vaxStateDF.drop(columns=['sinovac4'])
+vaxStateDF = vaxStateDF.drop(columns=['astra1'])
+vaxStateDF = vaxStateDF.drop(columns=['astra2'])
+vaxStateDF = vaxStateDF.drop(columns=['astra3'])
+vaxStateDF = vaxStateDF.drop(columns=['astra4'])
+vaxStateDF = vaxStateDF.drop(columns=['sinopharm1'])
+vaxStateDF = vaxStateDF.drop(columns=['sinopharm2'])
+vaxStateDF = vaxStateDF.drop(columns=['sinopharm3'])
+vaxStateDF = vaxStateDF.drop(columns=['sinopharm4'])
+vaxStateDF = vaxStateDF.drop(columns=['cansino'])
+vaxStateDF = vaxStateDF.drop(columns=['cansino3'])
+vaxStateDF = vaxStateDF.drop(columns=['cansino4'])
+vaxStateDF = vaxStateDF.drop(columns=['pending1'])
+vaxStateDF = vaxStateDF.drop(columns=['pending2'])
+vaxStateDF = vaxStateDF.drop(columns=['pending3'])
+vaxStateDF = vaxStateDF.drop(columns=['pending4'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_partial'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_full'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_partial_adol'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_full_adol'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster_adol'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2_adol'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_partial_child'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_full_child'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster_child'])
+vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2_child'])
+
+# %% Print Detail
+print("VAX STATE INFO: ")
+vaxStateDF.info()
+print("VAX STATE DESCRIBE: ")
+vaxStateDF.describe()
+
+# %% Plot box plot
+num_columns = len(vaxStateDF.columns)
+num_rows = (num_columns + 2) // 3
+
+# Plot boxplot for each column
+plt.figure(figsize=(15, num_rows * 5))
+skipDate = True
+skipState = True
+for i, column in enumerate(vaxStateDF.columns, 1):
+    if skipDate:
+        skipDate = False
+        continue
+    if skipState:
+        skipState = False
+        continue
+    plt.subplot(num_rows, 3, i)
+    sns.boxplot(y=vaxStateDF[column])
+    plt.title(f'Boxplot of {column}')
+    plt.ylabel('Value')
+plt.tight_layout()
+plt.show()
+
+# %% Replace outlier with mean 
+skipDate = True
+skipState = True
+for column in vaxStateDF.columns:
+    if skipDate:
+        skipDate = False
+        continue
+    if skipState:
+        skipState = False
+        continue
+    mean_value = int(vaxStateDF[column].mean())
+    std_value = vaxStateDF[column].std()
+    upper_bound = mean_value + 3 * std_value
+    
+    vaxStateDF.loc[vaxStateDF[column] > upper_bound, column] = mean_value
+
+
+# %%
+print(vaxStateDF)
+vaxStateDF.info()
+vaxStateDF.describe()
+
+# %% Save processed vax malaysia into mongoDB
+collectionVaxStateClean = dbName["vaxStateClean"]
+vaxStateJSON = json.loads(vaxStateDF.to_json(orient="records"))
+collectionVaxStateClean.delete_many({})
+collectionVaxStateClean.insert_many(vaxStateJSON)
+
+#######################################################################################
+
+# %% Merge Case Malaysia and Vax Malaysia
+dbName = getDatabase()
+
+colCaseMalaysia = dbName["caseMalaysiaClean"]
+cursor = colCaseMalaysia.find({})
+documents = list(cursor)
+caseMalaysia = pd.DataFrame(documents)
+caseMalaysia = caseMalaysia.drop(columns=['_id'])
+caseMalaysia = caseMalaysia.drop(columns=['sequentialDay'])
+
+
+colVaxMalaysia = dbName["vaxMalaysiaClean"]
+cursor = colVaxMalaysia.find({})
+documents = list(cursor)
+vaxMalaysia = pd.DataFrame(documents)
+vaxMalaysia = vaxMalaysia.drop(columns=["_id"])
+vaxMalaysia = vaxMalaysia.drop(columns=["sequentialDay"])
+
+
+#%%Print Case
+print("Case Malaysia: ")
+caseMalaysia.describe()
+caseMalaysia.info()
+print(caseMalaysia)
+
+#%%Print Vax
+print("\nVax Malaysia: ")
+vaxMalaysia.describe()
+vaxMalaysia.info()
+print(vaxMalaysia)
+
+# %% Merge dataset
+caseVaxMalaysia = pd.merge(caseMalaysia, vaxMalaysia, on='date', how='inner')
+print("Inner Join:")
+print(caseVaxMalaysia)
+
+# %% Save processed case vax malaysia into mongoDB
+colCaseVax = dbName["caseVaxMalaysia"]
+caseVaxJSON = json.loads(caseVaxMalaysia.to_json(orient="records"))
+colCaseVax.delete_many({})
+colCaseVax.insert_many(caseVaxJSON)
+
+# %%
