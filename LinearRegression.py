@@ -7,19 +7,22 @@ from sklearn.linear_model import LinearRegression
 
 # Connect to the database and retrieve the collections
 db = getDatabase()
-collCaseM = db["caseMalaysiaClean"]
-collVaxM = db["vaxMalaysiaClean"]
+collection = db["caseVaxMalaysia"]
+# collCaseM = db["caseMalaysiaClean"]
+# collVaxM = db["vaxMalaysiaClean"]
 
-# Retrieve data from MongoDB collections and load into pandas DataFrames
-dataCaseM = pd.DataFrame(list(collCaseM.find()))
-dataVaxM = pd.DataFrame(list(collVaxM.find()))
+# # Retrieve data from MongoDB collections and load into pandas DataFrames
+# dataCaseM = pd.DataFrame(list(collCaseM.find()))
+# dataVaxM = pd.DataFrame(list(collVaxM.find()))
+data = pd.DataFrame(list(collection.find()))
 
-# Convert dates to datetime format
-dataCaseM['date'] = pd.to_datetime(dataCaseM['date'])
-dataVaxM['date'] = pd.to_datetime(dataVaxM['date'])
 
-# Merge the cases and vaccination data on the date
-data = pd.merge(dataCaseM, dataVaxM, on='date')
+# # Convert dates to datetime format
+# dataCaseM['date'] = pd.to_datetime(dataCaseM['date'])
+# dataVaxM['date'] = pd.to_datetime(dataVaxM['date'])
+
+# # Merge the cases and vaccination data on the date
+# data = pd.merge(dataCaseM, dataVaxM, on='date')
 
 # Calculate cumulative vaccinations
 data['cumulative_vaccinations'] = data['daily'].cumsum()
