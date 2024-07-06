@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Database import getDatabase
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn import metrics
 
 # Connect to the database and retrieve the collections
 db = getDatabase()
@@ -70,3 +71,11 @@ plt.legend()
 ax = plt.gca()
 ax.set_xticklabels(['{:.1f}M'.format(x / 1e6) for x in ax.get_xticks()])
 plt.show()
+
+mae = metrics.mean_absolute_error(y_test, y_pred)
+mse = metrics.mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"Mean Absolute Error (MAE): {mae}")
+print(f"Mean Squared Error (MSE): {mse}")
+print(f"Root Mean Squared Error (RMSE): {rmse}")
