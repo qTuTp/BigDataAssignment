@@ -3,10 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import gaussian_filter1d  # For smoothing data
 from matplotlib.ticker import FuncFormatter  # Import FuncFormatter for custom formatting
+from Database import getDatabase
 
 # Load data for total cases by age category
-dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
-dataCaseS = pd.read_csv("dataset/cases_state.csv")
+# dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
+# dataCaseS = pd.read_csv("dataset/cases_state.csv")
+dbName = getDatabase()
+colCaseM = dbName["caseMalaysia"]
+colCaseS = dbName["caseState"]
+
+dataCaseM = pd.DataFrame(list(colCaseM.find()))
+dataCaseS = pd.DataFrame(list(colCaseS.find()))
 
 # Renaming columns for easier access
 dataCaseM.rename(columns={
