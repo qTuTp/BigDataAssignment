@@ -2,12 +2,25 @@ import streamlit as st
 import pandas as pd
 from Database import getDatabase
 import plotly.graph_objects as go
+import plotly.express as px
 import matplotlib.pyplot as plt
 import logging
 from scipy.ndimage import gaussian_filter1d  # For smoothing data
 import numpy as np
 from matplotlib.ticker import FuncFormatter  # Import FuncFormatter for custom formatting
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+"""
+#################################TO READ!!!##############################
+-To run the dashboard, please type 'streamlit run ./Dashboard.py' in the terminal and enter
 
+-In case you encountered issues related to uninstall library, please type 'pip install -r ./requirements.txt' and run in the terminal 
+to install the required dependencies.
+
+#########################################################################
+
+"""
 def millions_formatter(x, pos):
     return f'{x / 1e6:.0f}M'
 
@@ -43,15 +56,15 @@ if __name__ == "__main__":
                       "New Covid-19 Cases, Recoveries and Vaccination in 2022","New Covid-19 Cases, Recoveries and Vaccination in 2023",
                       "New Covid-19 Cases, Recoveries and Vaccination in 2024", "New Covid-19 Cases and Recoveries Overall",
                       "Vaccination Stage for adolescent and child", "Covid-19 Active Cases and Cummulative Vaccination in Overall"],
-        "Bar Chart":["Covid-19 Case Distribution across age group", "Daily Vaccination by State", "Covid-19 Cases by state in age group", 
+        "Bar Chart":["Covid-19 Case Distribution across age group", "Total Vaccination by State", "Covid-19 Cases by state in age group", 
                      "Vaccination by State for adolescent and child"],
-        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination","Linear Regression for Daily Covid-19 Cases and Amount of Vaccination - Testing", 
-                        "Linear Regression for Daily Covid-19 Cases and Amount of Vaccination - Training"],
+        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination", "Linear Regression for Daily Covid-19 Cases and Amount of Vaccination"],
         "Pie Chart":["Active Covid-19 Case by age group", "Distribution of Vaccine Type"],
-        "Heat Map":["Total Case by State"]
+        "Heat Map":["Total Case by State"],
+        "Linear Regression":["Linear Regression for Daily Covid-19 Cases and Cummulative Vaccination"]
     }
     
-    chartVisual = st.sidebar.selectbox('Select Charts/Plot type', ('Line Chart', 'Bar Chart', 'Scatter Plot', "Pie Chart", "Heat Map"))
+    chartVisual = st.sidebar.selectbox('Select Charts/Plot type', ('Line Chart', 'Bar Chart', 'Scatter Plot', "Pie Chart", "Heat Map", "Linear Regression"))
     logging.info(chartVisual)
     selectedChart = st.sidebar.selectbox("Select Chart",chartDetail[chartVisual])
     st.header(selectedChart)
@@ -121,6 +134,8 @@ if __name__ == "__main__":
                       yaxis_title='Active Cases')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: GohWeiZhang]")
 
 
 
@@ -145,6 +160,8 @@ if __name__ == "__main__":
                       yaxis_title='Number')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: TanYanWai]")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2022":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -166,6 +183,8 @@ if __name__ == "__main__":
                       yaxis_title='Number')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: TanYanWai]")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2023":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -187,6 +206,8 @@ if __name__ == "__main__":
                       yaxis_title='Number')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: TanYanWai]")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2024":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -208,6 +229,8 @@ if __name__ == "__main__":
                       yaxis_title='Number')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: TanYanWai]")
             
         elif selectedChart == "Covid-19 Active Cases and Cummulative Vaccination in Overall":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
@@ -233,6 +256,9 @@ if __name__ == "__main__":
                       yaxis_title='Number')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: ChanHuanyi]")
+            
         elif selectedChart == "New Covid-19 Cases and Recoveries Overall":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -268,6 +294,8 @@ if __name__ == "__main__":
             # ax.tight_layout()
             
             # st.pyplot(fig)
+            
+            st.markdown("[Description: TanYanWai]")
         elif selectedChart == "Vaccination Stage for adolescent and child":
             fig = go.Figure()
             # Extract relevant data for the stages of vaccination for adolescents and children
@@ -301,12 +329,240 @@ if __name__ == "__main__":
                       yaxis_title='Number of Vaccinations')
             
             st.plotly_chart(fig)
+            
+            st.markdown("[Description: BongKaiMin]")
     elif chartVisual == "Bar Chart":
-        pass
+        if selectedChart == "Covid-19 Case Distribution across age group":
+            caseMalaysiaDF.rename(columns={
+                'cases_child': 'child',
+                'cases_adolescent': 'adolescent',
+                'cases_adult': 'adult',
+                'cases_elderly': 'elderly'
+            }, inplace=True)
+            
+            # Calculate total cases for each category
+            totals = {
+                'child': caseMalaysiaDF['child'].sum(),
+                'adolescent': caseMalaysiaDF['adolescent'].sum(),
+                'adult': caseMalaysiaDF['adult'].sum(),
+                'elderly': caseMalaysiaDF['elderly'].sum()
+            }
+            
+            categories = list(totals.keys())
+            totals_values = list(totals.values())
+            fig1 = px.bar(x=categories, y=totals_values, labels={'x': 'Age Categories', 'y': 'Total Number of Cases'},
+                        title='COVID-19 Case Distribution Across Age Groups', color=categories)
+            fig1.update_yaxes(tickformat=',.1f', title='Total Number of Cases')
+            st.plotly_chart(fig1)
+            
+            st.markdown("[Description: GohWeiZhang]")
+
+            
+        elif selectedChart == "Total Vaccination by State":
+            vaxStateDF['date'] = pd.to_datetime(vaxStateDF['date'])
+            vaxStateDF = vaxStateDF.sort_values(by='date')
+            state_vaccinations = vaxStateDF.groupby('state')['daily'].sum().reset_index()
+            state_vaccinations['daily_millions'] = state_vaccinations['daily']
+
+            # Streamlit layout for state vaccinations bar chart
+            st.subheader('Total Vaccinations by State')
+            state_chart = px.bar(state_vaccinations, x='state', y='daily_millions', 
+                                labels={'daily_millions': 'Total Vaccinations'}, 
+                                title='Total Vaccinations by State')
+            st.plotly_chart(state_chart)
+            
+            st.markdown("[Description: TanYanWai]")
+            
+        elif selectedChart == "Covid-19 Cases by state in age group":
+            caseStateDF['date'] = pd.to_datetime(caseStateDF['date'])
+            state_cases = caseStateDF.groupby('state')[['cases_child', 'cases_adolescent', 'cases_adult', 'cases_elderly']].sum().reset_index()
+            state_cases.rename(columns={
+                'cases_child': 'totalCases_child',
+                'cases_adolescent': 'totalCases_adolescent',
+                'cases_adult': 'totalCases_adult',
+                'cases_elderly': 'totalCases_elderly'
+            }, inplace=True)
+            
+            # fig, ax = plt.subplots(figsize=(12, 8))
+            # # Define the positions of the bars on the x-axis
+            # states = state_cases['state']
+            # bar_width = 0.5
+
+            # # Plot each age group as a bar stack
+            # p1 = plt.bar(states, state_cases['totalCases_child'], bar_width, label='Child', color='skyblue')
+            # p2 = plt.bar(states, state_cases['totalCases_adolescent'], bar_width, bottom=state_cases['totalCases_child'], label='Adolescent', color='lightgreen')
+            # p3 = plt.bar(states, state_cases['totalCases_adult'], bar_width, bottom=state_cases['totalCases_child'] + state_cases['totalCases_adolescent'], label='Adult', color='orange')
+            # p4 = plt.bar(states, state_cases['totalCases_elderly'], bar_width, bottom=state_cases['totalCases_child'] + state_cases['totalCases_adolescent'] + state_cases['totalCases_adult'], label='Elderly', color='red')
+            
+            # ax.set_title('Total Number of COVID-19 Cases in Each State by Age Group')
+            # ax.set_xlabel('State')
+            # ax.set_ylabel('Total Cases (in millions)')
+            # ax.set_xticklabels(states, rotation=90)  # Rotate state names for better readability
+            # ax.legend()
+            # # Customize the y-axis tick labels to show values in millions
+            # ax.set_yticklabels(['{:.1f}M'.format(x / 1e6) for x in ax.get_yticks()])
+            # fig.tight_layout()
+            
+            # st.pyplot(fig)
+            # Melt the dataframe for easier plotting with Plotly
+            state_cases_melted = state_cases.melt(id_vars='state', value_vars=['totalCases_child', 'totalCases_adolescent', 'totalCases_adult', 'totalCases_elderly'],
+                                                var_name='Age Group', value_name='Total Cases')
+
+            # Create the plotly bar chart
+            fig = px.bar(state_cases_melted, 
+                        x='state', 
+                        y='Total Cases', 
+                        color='Age Group', 
+                        title='Total Number of COVID-19 Cases in Each State by Age Group',
+                        labels={'state': 'State', 'Total Cases': 'Total Cases'},
+                        height=600)
+
+            # Customize the y-axis to show values in millions
+            fig.update_yaxes(tickformat=',.1f')
+
+            # Rotate x-axis labels for better readability
+            fig.update_layout(xaxis={'categoryorder':'total descending', 'tickangle':-90})
+
+            # Show the plot in Streamlit
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: BongKaiMin]")
+            
+        elif selectedChart == "Vaccination by State for adolescent and child":
+            # Group the data by state and sum the cases for each age group
+            stateVax = vaxStateDF.groupby('state')[['daily_partial_adol', 'daily_full_adol', 'daily_booster_adol', 'daily_booster2_adol','daily_partial_child', 'daily_full_child', 'daily_booster_child', 'daily_booster2_child']].sum().reset_index()
+            
+            # Extract the data and sum
+            adol_data = stateVax[['daily_partial_adol', 'daily_full_adol', 'daily_booster_adol', 'daily_booster2_adol']]
+            child_data = stateVax[['daily_partial_child', 'daily_full_child', 'daily_booster_child', 'daily_booster2_child']]
+
+            adol_data['total_adol'] = adol_data.sum(axis=1)
+            child_data['total_child'] = child_data.sum(axis=1)
+            
+
+            # # Extract the data and sum
+            # adol_data = stateVax[['daily_partial_adol', 'daily_full_adol', 'daily_booster_adol', 'daily_booster2_adol']]
+            # child_data = stateVax[['daily_partial_child', 'daily_full_child', 'daily_booster_child', 'daily_booster2_child']]
+
+            # adol_data['total_adol'] = adol_data.sum(axis=1)
+            # child_data['total_child'] = child_data.sum(axis=1)
+
+            plot_data = pd.DataFrame({
+                'State': stateVax["state"],
+                'Adolescent': adol_data['total_adol'],
+                'Child': child_data['total_child']
+            })
+            
+            state_vax_melted = plot_data.melt(id_vars='State', value_vars=['Adolescent', 'Child'],
+                                                var_name='Age Group', value_name='Total Vaccination')
+
+            # Plot using Plotly
+            st.subheader('Vaccinations by State - Adolescent and Child')
+            fig = px.bar(state_vax_melted, x='State', y="Total Vaccination", 
+                        labels={'Total Vaccination': 'Number of Vaccinations'}, 
+                        color='Age Group',
+                        title='Vaccinations by State - Adolescent and Child',
+                        barmode='stack')
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: ChanHuanyi]")
+            
     elif chartVisual == "Scatter Plot":
-        pass
+        if selectedChart == "Covid-19 Cases vs Daily Vaccination":
+            data = pd.merge(caseMalaysiaDF, vaxMalaysiaDF, on='date')
+            data = data.sort_values(by='date')
+            
+            # Create scatter plot for daily vaccinations vs new COVID-19 cases
+            # Streamlit layout for scatter plot
+            st.subheader('New COVID-19 Cases vs Daily Vaccinations')
+            scatter_chart = px.scatter(data, x='daily', y='cases_new', 
+                                    labels={'daily': 'Daily Vaccinations', 'cases_new': 'New COVID-19 Cases'}, 
+                                    title='New COVID-19 Cases vs Daily Vaccinations')
+            st.plotly_chart(scatter_chart)
+            
+            st.markdown("[Description: TanYanWai]")
+            
     elif chartVisual == "Pie Chart":
-        pass
+        if selectedChart == "Active Covid-19 Case by age group":
+            # Renaming columns for easier access
+            caseMalaysiaDF.rename(columns={
+                'cases_child': 'child',
+                'cases_adolescent': 'adolescent',
+                'cases_adult': 'adult',
+                'cases_elderly': 'elderly'
+            }, inplace=True)
+            # Calculate total cases for each category
+            totals = {
+                'child': caseMalaysiaDF['child'].sum(),
+                'adolescent': caseMalaysiaDF['adolescent'].sum(),
+                'adult': caseMalaysiaDF['adult'].sum(),
+                'elderly': caseMalaysiaDF['elderly'].sum()
+            }
+
+            # Calculate total active cases
+            total_active_cases = caseMalaysiaDF['cases_active'].sum()
+            
+            proportions = {
+                'child': total_active_cases / totals['child'],
+                'adolescent': total_active_cases / totals['adolescent'],
+                'adult': total_active_cases / totals['adult'],
+                'elderly': total_active_cases / totals['elderly']
+            }
+
+            # Plot pie chart for proportions of active cases by age category
+            fig = px.pie(values=list(proportions.values()), names=list(proportions.keys()), 
+                        title='Proportion of Active COVID-19 Cases by Age Category', hole=0.3)
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: GohWeiZhang]")
+            
+        elif selectedChart == "Distribution of Vaccine Type":
+            # Create cumulative attributes for each type of vaccination
+            vaxMalaysiaDF['cumulative_pfizer'] = (vaxMalaysiaDF['pfizer1'] +
+                                            vaxMalaysiaDF['pfizer2'] +
+                                            vaxMalaysiaDF['pfizer3'] +
+                                            vaxMalaysiaDF['pfizer4']).cumsum()
+
+            vaxMalaysiaDF['cumulative_sinovac'] = (vaxMalaysiaDF['sinovac1'] +
+                                            vaxMalaysiaDF['sinovac2'] +
+                                            vaxMalaysiaDF['sinovac3'] +
+                                            vaxMalaysiaDF['sinovac4']).cumsum()
+
+            vaxMalaysiaDF['cumulative_astra'] = (vaxMalaysiaDF['astra1'] +
+                                            vaxMalaysiaDF['astra2'] +
+                                            vaxMalaysiaDF['astra3'] +
+                                            vaxMalaysiaDF['astra4']).cumsum()
+
+            vaxMalaysiaDF['cumulative_sinopharm'] = (vaxMalaysiaDF['sinopharm1'] +
+                                                vaxMalaysiaDF['sinopharm2'] +
+                                                vaxMalaysiaDF['sinopharm3'] +
+                                                vaxMalaysiaDF['sinopharm4']).cumsum()
+
+            vaxMalaysiaDF['cumulative_cansino'] = (vaxMalaysiaDF['cansino'] +
+                                            vaxMalaysiaDF['cansino3'] +
+                                            vaxMalaysiaDF['cansino4']).cumsum()
+            
+            
+            # Aggregate the total cumulative vaccinations for each type
+            total_vax = vaxMalaysiaDF[['cumulative_pfizer',
+                                'cumulative_sinovac',
+                                'cumulative_astra',
+                                'cumulative_sinopharm',
+                                'cumulative_cansino']].max()
+            
+            # Define the labels and colors for the pie chart
+            labels = ['Pfizer', 'Sinovac', 'AstraZeneca', 'Sinopharm', 'CanSino']
+            
+            # Plot the pie chart using Plotly
+            fig = px.pie(values=total_vax, names=labels, title='Distribution of COVID-19 Vaccinations by Type in Malaysia',
+                        color_discrete_sequence=px.colors.qualitative.Pastel)
+
+            # Show the plot in Streamlit
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: BongKaiMin]")
+            
+            
     elif chartVisual == "Heat Map":
         if selectedChart == "Total Case by State":
             caseStateDF['cases_new'] = pd.to_numeric(caseStateDF['cases_new'], errors='coerce')
@@ -327,8 +583,106 @@ if __name__ == "__main__":
             fig.colorbar(heatmap, ax=ax, label='Total Cases (in millions)')
             
             ax.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
-
-            
+  
             st.pyplot(fig)
+            
+            st.markdown("[Description: GohWeiZhang]")
+            
+    elif chartVisual == "Linear Regression":
+        caseVaxMalaysiaDF['cumulative_vaccinations'] = caseVaxMalaysiaDF['daily'].cumsum()
+
+        # X: Cumulative Vaccinations, Y: Daily New Cases
+        X = caseVaxMalaysiaDF[['cumulative_vaccinations']].values
+        Y = caseVaxMalaysiaDF[['cases_new']].values
         
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+
+        # Create a linear regression model
+        model = LinearRegression()
+
+        # Fit the model to the training data
+        model.fit(X_train, y_train)
+
+        # Make predictions on the test data
+        y_pred = model.predict(X_test)
+
+        Y_train_pred = model.predict(X_train)
+        
+        # Plot the training data and the regression line using Plotly
+        fig = go.Figure()
+
+        # Scatter plot for training data
+        fig.add_trace(go.Scatter(x=X_train.flatten(), y=y_train.flatten(),
+                                mode='markers',
+                                marker=dict(color='blue'),
+                                name='Training Data'))
+
+        # Regression line
+        fig.add_trace(go.Scatter(x=X_train.flatten(), y=model.predict(X_train).flatten(),
+                                mode='lines',
+                                line=dict(color='red', width=3),
+                                name='Regression Line'))
+
+        # Layout
+        fig.update_layout(title='Linear Regression - Training Set',
+                        xaxis_title='Cumulative Vaccinations',
+                        yaxis_title='Daily New Cases',
+                        legend=dict(x=0, y=1, traceorder='normal'),
+                        showlegend=True)
+
+        # Show plot
+        st.plotly_chart(fig)
+        
+        # Plot the test data and the regression line using Plotly
+        fig = go.Figure()
+
+        # Scatter plot for test data
+        fig.add_trace(go.Scatter(x=X_test.flatten(), y=y_test.flatten(),
+                                mode='markers',
+                                marker=dict(color='blue'),
+                                name='Test Data'))
+
+        # Regression line (using training data prediction for consistency)
+        fig.add_trace(go.Scatter(x=X_train.flatten(), y=model.predict(X_train).flatten(),
+                                mode='lines',
+                                line=dict(color='red', width=3),
+                                name='Regression Line'))
+
+        # Layout
+        fig.update_layout(title='Linear Regression - Test Set',
+                        xaxis_title='Cumulative Vaccinations (in millions)',
+                        yaxis_title='Daily New Cases',
+                        legend=dict(x=0, y=1, traceorder='normal'),
+                        showlegend=True)
+
+        # Show plot
+        st.plotly_chart(fig)
+        
+        # Calculate and print evaluation metrics
+        mae = metrics.mean_absolute_error(y_test, y_pred)
+        mse = metrics.mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        
+        st.markdown("[Description: BongKaiMin]")
+        
+        # Create a table trace for the metrics
+        metric_table = go.Table(
+            header=dict(values=['Metric', 'Value'],
+                        align='left'),
+            cells=dict(values=[['Mean Absolute Error (MAE)', 'Mean Squared Error (MSE)', 'Root Mean Squared Error (RMSE)'],
+                            [mae, mse, rmse]],
+                    align='left')
+        )
+
+        fig = go.Figure(data=[metric_table])
+        fig.update_layout(title='Performance Metrics',
+                        height=300,
+                        margin=dict(l=20, r=20, t=50, b=20))
+        
+        st.plotly_chart(fig)
+
+        
+        
+
     
