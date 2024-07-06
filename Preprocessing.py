@@ -78,7 +78,6 @@ caseMalaysiaDF.info()
 caseMalaysiaDF.describe()
 
 # %% Add sequential date
-# Reset index to start from 0
 
 caseMalaysiaDF['sequentialDay'] = caseMalaysiaDF.index + 1
 
@@ -91,7 +90,7 @@ collectionCaseMalaysiaClean.insert_many(caseMalaysiaJSON)
 #######################################################################################
 
 # %%Preprocessing for vax malaysia
-# Get Case Malaysia
+# Get Vax Malaysia
 collection = dbName["vaxMalaysia"]
 cursor = collection.find({})
 documents = list(cursor)
@@ -131,19 +130,7 @@ vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['pending1'])
 vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['pending2'])
 vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['pending3'])
 vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['pending4'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_partial'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_full'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster2'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_partial_adol'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_full_adol'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster_adol'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster2_adol'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_partial_child'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_full_child'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster_child'])
-vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['cumul_booster2_child'])
+
 
 
 
@@ -190,7 +177,6 @@ vaxMalaysiaDF.info()
 vaxMalaysiaDF.describe()
 
 # %% Add sequential date
-# Reset index to start from 0
 
 vaxMalaysiaDF['sequentialDay'] = vaxMalaysiaDF.index + 1
 
@@ -321,19 +307,7 @@ vaxStateDF = vaxStateDF.drop(columns=['pending1'])
 vaxStateDF = vaxStateDF.drop(columns=['pending2'])
 vaxStateDF = vaxStateDF.drop(columns=['pending3'])
 vaxStateDF = vaxStateDF.drop(columns=['pending4'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_partial'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_full'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_partial_adol'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_full_adol'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster_adol'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2_adol'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_partial_child'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_full_child'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster_child'])
-vaxStateDF = vaxStateDF.drop(columns=['cumul_booster2_child'])
+
 
 # %% Print Detail
 print("VAX STATE INFO: ")
@@ -426,6 +400,9 @@ print(vaxMalaysia)
 
 # %% Merge dataset
 caseVaxMalaysia = pd.merge(caseMalaysia, vaxMalaysia, on='date', how='inner')
+caseVaxMalaysia['sequentialDay'] = caseVaxMalaysia.index + 1
+
+#%%
 print("Inner Join:")
 print(caseVaxMalaysia)
 
