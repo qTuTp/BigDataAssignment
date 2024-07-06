@@ -15,7 +15,7 @@ into it. And replace <username> and <password> with you database accces credenti
 from databaseAccess import databaseAccess
 
 def getDatabase():
-    uri = f"mongodb+srv://{databaseAccess["username"]}:{databaseAccess["password"]}@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
+    uri = f"mongodb+srv://{databaseAccess['username']}:{databaseAccess['password']}@bigdata.qu7vocu.mongodb.net/?appName=BigData"    
     # Create a new client and connect to the server
     client = MongoClient(uri)
     
