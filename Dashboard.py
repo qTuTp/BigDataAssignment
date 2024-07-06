@@ -11,7 +11,8 @@ from matplotlib.ticker import FuncFormatter  # Import FuncFormatter for custom f
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
-"""
+
+toRead="""
 #################################TO READ!!!##############################
 -To run the dashboard, please type 'streamlit run ./Dashboard.py' in the terminal and enter
 
@@ -21,6 +22,8 @@ to install the required dependencies.
 #########################################################################
 
 """
+del toRead
+
 def millions_formatter(x, pos):
     return f'{x / 1e6:.0f}M'
 
