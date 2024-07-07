@@ -65,11 +65,25 @@ for column in caseMalaysiaDF.columns:
     if skipDate:
         skipDate = False
         continue
-    mean_value = int(caseMalaysiaDF[column].mean())
-    std_value = caseMalaysiaDF[column].std()
-    upper_bound = mean_value + 3 * std_value
+    # mean_value = int(caseMalaysiaDF[column].mean())
+    # std_value = caseMalaysiaDF[column].std()
+    # upper_bound = mean_value + 3 * std_value
     
-    caseMalaysiaDF.loc[caseMalaysiaDF[column] > upper_bound, column] = mean_value
+    # caseMalaysiaDF.loc[caseMalaysiaDF[column] > upper_bound, column] = mean_value
+    
+    Q1 = caseMalaysiaDF[column].quantile(0.25)  # First quartile
+    Q3 = caseMalaysiaDF[column].quantile(0.75)  # Third quartile
+    IQR = Q3 - Q1  # Interquartile range
+    
+    upper_bound = Q3 + 1.5 * IQR  # Upper bound
+    lower_bound = Q1 - 1.5 * IQR  # Lower bound
+    
+    # Replace outliers (values above the upper bound or below the lower bound) with the mean value
+    mean_value = int(caseMalaysiaDF[column].mean())
+    caseMalaysiaDF.loc[(caseMalaysiaDF[column] > upper_bound) | (caseMalaysiaDF[column] < lower_bound), column] = mean_value
+    
+    
+    
 
 
 # %%
@@ -164,11 +178,23 @@ for column in vaxMalaysiaDF.columns:
     if skipDate:
         skipDate = False
         continue
-    mean_value = int(vaxMalaysiaDF[column].mean())
-    std_value = vaxMalaysiaDF[column].std()
-    upper_bound = mean_value + 3 * std_value
+    # mean_value = int(vaxMalaysiaDF[column].mean())
+    # std_value = vaxMalaysiaDF[column].std()
+    # upper_bound = mean_value + 3 * std_value
     
-    vaxMalaysiaDF.loc[vaxMalaysiaDF[column] > upper_bound, column] = mean_value
+    # vaxMalaysiaDF.loc[vaxMalaysiaDF[column] > upper_bound, column] = mean_value
+    # caseMalaysiaDF.loc[caseMalaysiaDF[column] > upper_bound, column] = mean_value
+    
+    Q1 = vaxMalaysiaDF[column].quantile(0.25)  # First quartile
+    Q3 = vaxMalaysiaDF[column].quantile(0.75)  # Third quartile
+    IQR = Q3 - Q1  # Interquartile range
+    
+    upper_bound = Q3 + 1.5 * IQR  # Upper bound
+    lower_bound = Q1 - 1.5 * IQR  # Lower bound
+    
+    # Replace outliers (values above the upper bound or below the lower bound) with the mean value
+    mean_value = int(vaxMalaysiaDF[column].mean())
+    vaxMalaysiaDF.loc[(vaxMalaysiaDF[column] > upper_bound) | (vaxMalaysiaDF[column] < lower_bound), column] = mean_value
 
 
 # %%
@@ -246,11 +272,16 @@ for column in caseStateDF.columns:
     if skipState:
         skipState = False
         continue
-    mean_value = int(caseStateDF[column].mean())
-    std_value = caseStateDF[column].std()
-    upper_bound = mean_value + 3 * std_value
+    Q1 = caseStateDF[column].quantile(0.25)  # First quartile
+    Q3 = caseStateDF[column].quantile(0.75)  # Third quartile
+    IQR = Q3 - Q1  # Interquartile range
     
-    caseStateDF.loc[caseStateDF[column] > upper_bound, column] = mean_value
+    upper_bound = Q3 + 1.5 * IQR  # Upper bound
+    lower_bound = Q1 - 1.5 * IQR  # Lower bound
+    
+    # Replace outliers (values above the upper bound or below the lower bound) with the mean value
+    mean_value = int(caseStateDF[column].mean())
+    caseStateDF.loc[(caseStateDF[column] > upper_bound) | (caseStateDF[column] < lower_bound), column] = mean_value
 
 
 # %%
@@ -347,11 +378,22 @@ for column in vaxStateDF.columns:
     if skipState:
         skipState = False
         continue
-    mean_value = int(vaxStateDF[column].mean())
-    std_value = vaxStateDF[column].std()
-    upper_bound = mean_value + 3 * std_value
+    # mean_value = int(vaxStateDF[column].mean())
+    # std_value = vaxStateDF[column].std()
+    # upper_bound = mean_value + 3 * std_value
     
-    vaxStateDF.loc[vaxStateDF[column] > upper_bound, column] = mean_value
+    # vaxStateDF.loc[vaxStateDF[column] > upper_bound, column] = mean_value
+    
+    Q1 = vaxStateDF[column].quantile(0.25)  # First quartile
+    Q3 = vaxStateDF[column].quantile(0.75)  # Third quartile
+    IQR = Q3 - Q1  # Interquartile range
+    
+    upper_bound = Q3 + 1.5 * IQR  # Upper bound
+    lower_bound = Q1 - 1.5 * IQR  # Lower bound
+    
+    # Replace outliers (values above the upper bound or below the lower bound) with the mean value
+    mean_value = int(vaxStateDF[column].mean())
+    vaxStateDF.loc[(vaxStateDF[column] > upper_bound) | (vaxStateDF[column] < lower_bound), column] = mean_value
 
 
 # %%
