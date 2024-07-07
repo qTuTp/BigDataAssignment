@@ -1,19 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 from scipy.ndimage import gaussian_filter1d  # For smoothing data
-from matplotlib.ticker import FuncFormatter  # Import FuncFormatter for custom formatting
-from Database import getDatabase
 
-# Load data for total cases by age category
-# dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
-# dataCaseS = pd.read_csv("dataset/cases_state.csv")
-dbName = getDatabase()
-colCaseM = dbName["caseMalaysia"]
-colCaseS = dbName["caseState"]
-
-dataCaseM = pd.DataFrame(list(colCaseM.find()))
-dataCaseS = pd.DataFrame(list(colCaseS.find()))
+# Load and preprocess data for age categories
+dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
 
 # Renaming columns for easier access
 dataCaseM.rename(columns={
@@ -42,65 +32,61 @@ proportions = {
     'elderly': dataCaseM['cases_active'].sum() / totals['elderly']
 }
 
-# Calculate total cases by state
-dataCaseS['cases_new'] = pd.to_numeric(dataCaseS['cases_new'], errors='coerce')
-state_total_cases = dataCaseS.groupby('state')['cases_new'].sum().reset_index()
-state_total_cases = state_total_cases.sort_values(by='cases_new', ascending=False)
-
+# Load and preprocess data for active cases by state
+dataCaseS = pd.read_csv("dataset/cases_state.csv")
+dataCaseS['cases_active'] = pd.to_numeric(dataCaseS['cases_active'], errors='coerce')
 data_agg = dataCaseS.groupby('state')['cases_active'].sum().reset_index()
 data_agg.sort_values(by='cases_active', ascending=False, inplace=True)
 smoothed_cases = gaussian_filter1d(data_agg['cases_active'], sigma=2)
 
-# Extracting data for plotting
-states = state_total_cases['state']
-total_cases = state_total_cases['cases_new']
+# Load and preprocess data for recovery cases by state
+dataRecovery = pd.read_csv("dataset/cases_state.csv")
+dataRecovery['date'] = pd.to_datetime(dataRecovery['date'])
+dataRecovery['year'] = dataRecovery['date'].dt.year
+pivot_data = dataRecovery.pivot_table(index='year', columns='state', values='cases_recovered', aggfunc='sum')
+state_order = pivot_data.sum().sort_values().index
+pivot_data = pivot_data[state_order]
 
-# Plotting combined charts
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(18, 12))
+# Create combined figure with multiple subplots
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
 
-# Bar chart on ax1
+# Plot total cases by age category (ax1)
 categories = list(totals.keys())
 totals_values = list(totals.values())
 ax1.bar(categories, totals_values, color=['blue', 'green', 'orange', 'red'])
 ax1.set_xlabel('Age Categories')
-ax1.set_ylabel('Total Number of Cases (in millions)')
-ax1.set_title('COVID-19 Case Distribution Across Age Groups')
+ax1.set_ylabel('Total Number of Cases')
+ax1.set_title('Total Cases by Age Category')
 ax1.grid(axis='y', linestyle='--', alpha=0.7)
 
-# Function to format y-axis values in millions
-def millions_formatter(x, pos):
-    return f'{x / 1e6:.0f}M'
 
-ax1.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
-
-# Pie chart on ax2
+# Plot proportion of active cases by age category (ax2)
 labels = list(proportions.keys())
 sizes = list(proportions.values())
 ax2.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
 ax2.set_title('Proportion of Active COVID-19 Cases by Age Category')
 ax2.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-# Line chart on ax3
-smoothed_cases = gaussian_filter1d(data_agg['cases_active'], sigma=2)
-ax3.plot(states, smoothed_cases, marker='o', linestyle='-', color='b', linewidth=2)
-ax3.set_title('Active COVID-19 Cases by State')
+
+# Plot smoothed active cases by state (ax3)
+ax3.plot(data_agg['state'], smoothed_cases, marker='o', linestyle='-', color='b')
+ax3.set_xticks(data_agg.index)
+ax3.set_xticklabels(data_agg['state'], rotation=90)
 ax3.set_xlabel('State')
-ax3.set_ylabel('Active Cases (in millions)')
+ax3.set_ylabel('Smoothed Active Cases')
+ax3.set_title('Active COVID-19 Cases by State')
 ax3.grid(True)
-ax3.tick_params(axis='x', rotation=45)
 
-ax3.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
 
-# Heatmap on ax4
-heatmap = ax4.imshow([total_cases], cmap='YlOrRd', aspect='auto')
-ax4.set_xticks(np.arange(len(states)))
-ax4.set_xticklabels(states, rotation=45)
-ax4.set_xlabel('State')
-ax4.set_ylabel('Total Cases (in millions)')
-ax4.set_title('Total COVID-19 Cases by State')
-fig.colorbar(heatmap, ax=ax4, label='Total Cases (in millions)')
+# Plot stacked area for recovery cases by state (ax4)
+colors = plt.cm.tab20c(range(len(state_order)))
+pivot_data.plot(kind='area', stacked=True, figsize=(12, 8), color=colors, ax=ax4)
+ax4.set_title('State Recovery Cases Over Time (2020-2024)')
+ax4.set_xlabel('Year')
+ax4.set_ylabel('Recovery Cases')
+ax4.legend(title='State', loc='upper left', bbox_to_anchor=(1, 1))
+ax4.set_xticks([2020, 2021, 2022, 2023, 2024])
 
-ax4.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
-
+# Adjust layout and display the plot
 plt.tight_layout()
 plt.show()
