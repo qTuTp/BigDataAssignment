@@ -42,12 +42,14 @@ if __name__ == "__main__":
     colCaseState = dbName["caseState"]
     colCaseMalaysia = dbName["caseMalaysia"]
     colCaseVaxMalaysia = dbName["caseVaxMalaysia"]
+    population = dbName["population"]
     
     vaxStateDF = pd.DataFrame(list(colVaxState.find()))
     vaxMalaysiaDF = pd.DataFrame(list(colVaxMalaysia.find()))
     caseStateDF = pd.DataFrame(list(colCaseState.find()))
     caseMalaysiaDF = pd.DataFrame(list(colCaseMalaysia.find()))
     caseVaxMalaysiaDF = pd.DataFrame(list(colCaseVaxMalaysia.find()))
+    popDF = pd.DataFrame(list(population.find()))
     
     st.title("Covid-19 Analysis")
     st.markdown("Below is the analysis result on covid-19")
@@ -60,14 +62,14 @@ if __name__ == "__main__":
                       "New Covid-19 Cases, Recoveries and Vaccination in 2024", "New Covid-19 Cases and Recoveries Overall",
                       "Vaccination Stage for adolescent and child", "Covid-19 Active Cases and Cummulative Vaccination in Overall"],
         "Bar Chart":["Covid-19 Case Distribution across age group", "Total Vaccination by State", "Covid-19 Cases by state in age group", 
-                     "Vaccination by State for adolescent and child"],
+                     "Vaccination by State for adolescent and child", "Population For each state"],
         "Scatter Plot":["Covid-19 Cases vs Daily Vaccination", "Linear Regression for Daily Covid-19 Cases and Amount of Vaccination"],
-        "Pie Chart":["Active Covid-19 Case by age group", "Distribution of Vaccine Type"],
-        "Heat Map":["Total Case by State"],
+        "Pie Chart":["Active Covid-19 Case by age group", "Distribution of Vaccine Type", "Population For Each State", "Population of age group"],
+        "Area Chart":["State Recovery Cases Over Time (2020-2024)"],
         "Linear Regression":["Linear Regression for Daily Covid-19 Cases and Cummulative Vaccination"]
     }
     
-    chartVisual = st.sidebar.selectbox('Select Charts/Plot type', ('Line Chart', 'Bar Chart', 'Scatter Plot', "Pie Chart", "Heat Map", "Linear Regression"))
+    chartVisual = st.sidebar.selectbox('Select Charts/Plot type', ('Line Chart', 'Bar Chart', 'Scatter Plot', "Pie Chart", "Area Chart", "Linear Regression"))
     logging.info(chartVisual)
     selectedChart = st.sidebar.selectbox("Select Chart",chartDetail[chartVisual])
     st.header(selectedChart)
@@ -469,6 +471,32 @@ if __name__ == "__main__":
             st.plotly_chart(fig)
             
             st.markdown("[Description: ChanHuanyi]")
+        elif selectedChart == "Population For each state":
+            
+            
+            # Remove Malaysia
+            popDF = popDF[popDF['state'] != 'Malaysia']
+            
+            # Melt the DataFrame to have age categories as a single column
+            popMelt = popDF.melt(id_vars=["state", "pop"], value_vars=["pop_18", "pop_60", "pop_12", "pop_5"],
+                                var_name="age_category", value_name="population")
+            
+            ageCatMapping = {
+                "pop_60": "60+",
+                "pop_18": "18+",
+                "pop_12": "12-17",
+                "pop_5": "5-11"
+            }
+            
+            popMelt["age_category"] = popMelt["age_category"].map(ageCatMapping)
+            
+            # Create the stacked bar chart using Plotly
+            fig = px.bar(popMelt, x="state", y="population", color="age_category", title="Population by Age Category in Each State",
+                        labels={"population": "Population", "state": "State", "age_category": "Age Category"})
+            
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: ChanHuanyi]")
             
     elif chartVisual == "Scatter Plot":
         if selectedChart == "Covid-19 Cases vs Daily Vaccination":
@@ -565,30 +593,65 @@ if __name__ == "__main__":
             
             st.markdown("[Description: BongKaiMin]")
             
+        elif selectedChart == "Population For Each State":
+            popDF = popDF[popDF['state'] != 'Malaysia']
+            fig = px.pie(popDF, values="pop", names="state", title="Population For Each State")
             
-    elif chartVisual == "Heat Map":
-        if selectedChart == "Total Case by State":
-            caseStateDF['cases_new'] = pd.to_numeric(caseStateDF['cases_new'], errors='coerce')
-            state_total_cases = caseStateDF.groupby('state')['cases_new'].sum().reset_index()
-            state_total_cases = state_total_cases.sort_values(by='cases_new', ascending=False)
+            st.plotly_chart(fig)
+            
+            st.markdown("[Description: ChanHuanyi]")
+        elif selectedChart == "Population of age group":
+            popDF = popDF[popDF['state'] == 'Malaysia']
+            age_group_values = popDF[['pop_60', 'pop_18', 'pop_12', 'pop_5']].values[0]
+            age_group_labels = ['60+', '18+', '12-17', '5-11']
 
-            states = state_total_cases['state']
-            total_cases = state_total_cases['cases_new']
+            fig = px.pie(names=age_group_labels, values=age_group_values, title='Age Group Distribution in Malaysia')
             
-            fig, ax = plt.subplots(figsize=(18, 12))
+            st.plotly_chart(fig)
             
-            heatmap = ax.imshow([total_cases], cmap='YlOrRd', aspect='auto')
-            ax.set_xticks(np.arange(len(states)))
-            ax.set_xticklabels(states, rotation=45)
-            ax.set_xlabel('State')
-            ax.set_ylabel('Total Cases (in millions)')
-            ax.set_title('Total COVID-19 Cases by State')
-            fig.colorbar(heatmap, ax=ax, label='Total Cases (in millions)')
+            st.markdown("[Description: ChanHuanyi]")
             
-            ax.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
+    elif chartVisual == "Area Chart":
+        if selectedChart == "State Recovery Cases Over Time (2020-2024)":
+            # caseStateDF['cases_new'] = pd.to_numeric(caseStateDF['cases_new'], errors='coerce')
+            # state_total_cases = caseStateDF.groupby('state')['cases_new'].sum().reset_index()
+            # state_total_cases = state_total_cases.sort_values(by='cases_new', ascending=False)
+
+            # states = state_total_cases['state']
+            # total_cases = state_total_cases['cases_new']
+            
+            # fig, ax = plt.subplots(figsize=(18, 12))
+            
+            # heatmap = ax.imshow([total_cases], cmap='YlOrRd', aspect='auto')
+            # ax.set_xticks(np.arange(len(states)))
+            # ax.set_xticklabels(states, rotation=45)
+            # ax.set_xlabel('State')
+            # ax.set_ylabel('Total Cases (in millions)')
+            # ax.set_title('Total COVID-19 Cases by State')
+            # fig.colorbar(heatmap, ax=ax, label='Total Cases (in millions)')
+            
+            # ax.yaxis.set_major_formatter(FuncFormatter(millions_formatter))
   
-            st.pyplot(fig)
+            # st.pyplot(fig)
             
+            dataRecovery = pd.DataFrame(list(colCaseState.find()))
+            dataRecovery['date'] = pd.to_datetime(dataRecovery['date'])
+            dataRecovery['year'] = dataRecovery['date'].dt.year
+            pivot_data = dataRecovery.pivot_table(index='year', columns='state', values='cases_recovered', aggfunc='sum')
+            state_order = pivot_data.sum().sort_values().index
+            pivot_data = pivot_data[state_order]
+
+            pivot_data = dataRecovery.pivot_table(index='year', columns='state', values='cases_recovered', aggfunc='sum')
+            state_order = pivot_data.sum().sort_values().index
+            pivot_data = pivot_data[state_order]
+            
+            fig = go.Figure()
+            for state in state_order:
+                fig.add_trace(go.Scatter(x=pivot_data.index, y=pivot_data[state], mode='lines', stackgroup='one', name=state))
+
+            fig.update_layout(title='State Recovery Cases Over Time (2020-2024)', xaxis_title='Year', yaxis_title='Recovery Cases')
+            
+            st.plotly_chart(fig)
             st.markdown("[Description: GohWeiZhang]")
             
     elif chartVisual == "Linear Regression":
