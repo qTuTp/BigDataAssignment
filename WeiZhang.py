@@ -1,9 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d  # For smoothing data
+from Database import getDatabase
 
 # Load and preprocess data for age categories
-dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
+dbName = getDatabase()
+
+# dataCaseM = pd.read_csv("dataset/cases_malaysia.csv")
+
+colCaseMalaysia = dbName["caseMalaysia"]
+dataCaseM = pd.DataFrame(list(colCaseMalaysia.find()))
 
 # Renaming columns for easier access
 dataCaseM.rename(columns={
@@ -33,14 +39,17 @@ proportions = {
 }
 
 # Load and preprocess data for active cases by state
-dataCaseS = pd.read_csv("dataset/cases_state.csv")
+# dataCaseS = pd.read_csv("dataset/cases_state.csv")
+
+colCaseState = dbName["caseState"]
+dataCaseS = pd.DataFrame(list(colCaseState.find()))
 dataCaseS['cases_active'] = pd.to_numeric(dataCaseS['cases_active'], errors='coerce')
 data_agg = dataCaseS.groupby('state')['cases_active'].sum().reset_index()
 data_agg.sort_values(by='cases_active', ascending=False, inplace=True)
 smoothed_cases = gaussian_filter1d(data_agg['cases_active'], sigma=2)
 
 # Load and preprocess data for recovery cases by state
-dataRecovery = pd.read_csv("dataset/cases_state.csv")
+dataRecovery = pd.DataFrame(list(colCaseState.find()))
 dataRecovery['date'] = pd.to_datetime(dataRecovery['date'])
 dataRecovery['year'] = dataRecovery['date'].dt.year
 pivot_data = dataRecovery.pivot_table(index='year', columns='state', values='cases_recovered', aggfunc='sum')
@@ -83,7 +92,7 @@ colors = plt.cm.tab20c(range(len(state_order)))
 pivot_data.plot(kind='area', stacked=True, figsize=(12, 8), color=colors, ax=ax4)
 ax4.set_title('State Recovery Cases Over Time (2020-2024)')
 ax4.set_xlabel('Year')
-ax4.set_ylabel('Recovery Cases')
+ax4.set_ylabel('Recovery Cases (millions)')
 ax4.legend(title='State', loc='upper left', bbox_to_anchor=(1, 1))
 ax4.set_xticks([2020, 2021, 2022, 2023, 2024])
 
