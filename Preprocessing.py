@@ -149,9 +149,9 @@ vaxMalaysiaDF = vaxMalaysiaDF.drop(columns=['pending4'])
 
 
 # %% Print Detail
-print("CASE MALAYSIA INFO: ")
+print("VAX MALAYSIA INFO: ")
 vaxMalaysiaDF.info()
-print("CASE MALAYSIA DESCRIBE: ")
+print("VAX MALAYSIA DESCRIBE: ")
 vaxMalaysiaDF.describe()
 
 # %% Plot box plot
@@ -223,9 +223,9 @@ caseStateDF = pd.DataFrame(documents)
 caseStateDF = caseStateDF.drop(columns=['_id'])
 
 # %% Print Detail
-print("CASE MALAYSIA INFO: ")
+print("CASE STATE INFO: ")
 caseStateDF.info()
-print("CASE MALAYSIA DESCRIBE: ")
+print("CASE STATE DESCRIBE: ")
 caseStateDF.describe()
 
 print(caseStateDF.isnull().sum())
@@ -235,9 +235,9 @@ caseStateDF = caseStateDF.drop(columns=['cases_import'])
 caseStateDF = caseStateDF.drop(columns=['cases_cluster'])
 
 # %% Print Detail
-print("CASE MALAYSIA INFO: ")
+print("CASE STATE INFO: ")
 caseStateDF.info()
-print("CASE MALAYSIA DESCRIBE: ")
+print("CASE STATE DESCRIBE: ")
 caseStateDF.describe()
 
 # %% Plot box plot
@@ -307,9 +307,9 @@ vaxStateDF = pd.DataFrame(documents)
 vaxStateDF = vaxStateDF.drop(columns=['_id'])
 
 # %% Print Detail
-print("CASE MALAYSIA INFO: ")
+print("VAX STATE INFO: ")
 vaxStateDF.info()
-print("CASE MALAYSIA DESCRIBE: ")
+print("VAX STATE DESCRIBE: ")
 vaxStateDF.describe()
 
 print(vaxStateDF.isnull().sum())
