@@ -777,7 +777,9 @@ if __name__ == "__main__":
             fig.update_layout(title='State Recovery Cases Over Time (2020-2024)', xaxis_title='Year', yaxis_title='Recovery Cases')
             
             st.plotly_chart(fig)
-            st.markdown("[Description: GohWeiZhang]")
+            st.markdown("The Recovery Cases Over Time 2020 - 2024 region chart provides a thorough overview of the development of COVID-19 recovery cases throughout the states of Malaysia for five years. ")
+
+
             
     elif chartVisual == "Linear Regression":
         caseVaxMalaysiaDF['cumulative_vaccinations'] = caseVaxMalaysiaDF['daily'].cumsum()
@@ -855,7 +857,7 @@ if __name__ == "__main__":
         mse = metrics.mean_squared_error(y_test, y_pred)
         rmse = np.sqrt(mse)
         
-        st.markdown("[Description: BongKaiMin]")
+        st.markdown("The linear regressions above show the linear regression model of training and test sets. The regression line depicts the general trend as the cumulative of the vaccinations rises, the new cases of COVID-19 reduce. This inverse relationship is anticipated and suggests that the model is correctly picking up on how vaccinations decrease new cases.")
         
         # Create a table trace for the metrics
         metric_table = go.Table(
