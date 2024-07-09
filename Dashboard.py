@@ -63,7 +63,7 @@ if __name__ == "__main__":
                       "Vaccination Stage for adolescent and child", "Covid-19 Active Cases and Cummulative Vaccination in Overall"],
         "Bar Chart":["Covid-19 Case Distribution across age group", "Total Vaccination by State", "Covid-19 Cases by state in age group", 
                      "Vaccination by State for adolescent and child", "Population For each state"],
-        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination"],
+        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination", "Linear Regression for Daily Covid-19 Cases and Amount of Vaccination"],
         "Pie Chart":["Active Covid-19 Case by age group", "Distribution of Vaccine Type", "Population For Each State", "Population of age group"],
         "Area Chart":["State Recovery Cases Over Time (2020-2024)"],
         "Linear Regression":["Linear Regression for Daily Covid-19 Cases and Cummulative Vaccination"]
@@ -140,7 +140,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: GohWeiZhang]")
+            st.markdown("The Active COVID-19 by State line chart provides a thorough visual depiction of the current COVID-19 case distribution and trends throughout Malaysia's states. Understanding the regional dynamics of the pandemic and determining the intensity of outbreaks in various geographic locations depend heavily on this graph.")
 
 
 
@@ -262,7 +262,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("From the chart, it clear that majority of people has token partial and full vaccination, while only half amount of them has taken booster vaccination, and booster 2 vaccination haven’t taken by a lot of people. The vaccination process was initiated by the partial vaccination and full vaccination, then follow with booster and then booster 2 vaccination. From this graph, it shows that there a peak of active cases around September 2021 and the active cases drops, this is likely due to the amount of people has taken the partial and full vaccination, helping to reduce the number of active cases. There is another peak of active cases in around March 2022, but the peak also drop quickly as there is also a rise of number of people who has taken partial vaccination and full vaccination just before the peak. This shows the effect of vaccination has start to develop. As Majority of people in Malaysia has taken partial and full vaccination, there is no more sudden rise in active in the dataset.")
+            st.markdown("[Description: ChanHuanyi]")
             
         elif selectedChart == "New Covid-19 Cases and Recoveries Overall":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
@@ -360,7 +360,7 @@ if __name__ == "__main__":
             fig1.update_yaxes(tickformat=',.1f', title='Total Number of Cases')
             st.plotly_chart(fig1)
             
-            st.markdown("[Description: GohWeiZhang]")
+            st.markdown("The Covid-19 Cases Distribution Across Age Groups bar chart provides a thorough overview of the distribution of COVID-19 cases among various age groups in the Malaysian population. The four main age groups that are the subject of this visualization are children, adolescents, adults, and the elderly. ")
 
             
         elif selectedChart == "Total Vaccination by State":
@@ -470,15 +470,12 @@ if __name__ == "__main__":
                         barmode='stack')
             st.plotly_chart(fig)
             
-            st.markdown("In some state such as Johor, Sarawak and Selangor have almost half amount of vaccination is taken by child even when referencing to Pie Chart Population For each State, the children population only take around 20%. This could be due to children is more vulnerable toward covid-19, hence they are prioritized for vaccination.")
+            st.markdown("[Description: ChanHuanyi]")
         elif selectedChart == "Population For each state":
             
             
-            # Remove Malaysia and non state
+            # Remove Malaysia
             popDF = popDF[popDF['state'] != 'Malaysia']
-            popDF = popDF[popDF['state'] != 'W.P. Labuan']
-            popDF = popDF[popDF['state'] != 'W.P. Putrajaya']
-            popDF = popDF[popDF['state'] != 'Klang Valley']
             
             # Melt the DataFrame to have age categories as a single column
             popMelt = popDF.melt(id_vars=["state", "pop"], value_vars=["pop_18", "pop_60", "pop_12", "pop_5"],
@@ -499,7 +496,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("From the chart, the state that have the highest population in Malaysia is Selangor while the state with the lowest population is Perlis. It is clear that the age of majority of the population in every state is 18 – 59, while 60+, 12-17 and 5-11 is the minority age group.")
+            st.markdown("[Description: ChanHuanyi]")
             
     elif chartVisual == "Scatter Plot":
         if selectedChart == "Covid-19 Cases vs Daily Vaccination":
@@ -548,7 +545,7 @@ if __name__ == "__main__":
                         title='Proportion of Active COVID-19 Cases by Age Category', hole=0.3)
             st.plotly_chart(fig)
             
-            st.markdown("[Description: GohWeiZhang]")
+            st.markdown("The Proportion of Active COVID-19 Cases by Age Group pie chart provides a clear and informative illustration of the distribution of COVID-19 infections among four age groups: children (22.6%), adolescents (44.4%), adults (3.92%), and the elderly (29.1%). ")
             
         elif selectedChart == "Distribution of Vaccine Type":
             # Create cumulative attributes for each type of vaccination
@@ -597,44 +594,12 @@ if __name__ == "__main__":
             st.markdown("The pie chart presenting the types of COVID-19 vaccines administered in Malaysia. The chart employs the use of cumulative frequencies of different vaccines to depict their proportions within the overall vaccination campaign. The available types of vaccines are Pfizer, Sinovac, AstraZeneca, CanSino, and Sinopharm.")
             
         elif selectedChart == "Population For Each State":
-            # Remove Malaysia and non state
-            popDF = popDF[popDF['state'] != 'W.P. Labuan']
-            popDF = popDF[popDF['state'] != 'W.P. Putrajaya']
-            popDF = popDF[popDF['state'] != 'Klang Valley']
             popDF = popDF[popDF['state'] != 'Malaysia']
             fig = px.pie(popDF, values="pop", names="state", title="Population For Each State")
             
             st.plotly_chart(fig)
             
-            st.markdown("From this pie chart, it can clearly show the population comparison between state, allow us to know the precedence of population for each state. The order of population of state from the least to the most is:")
-            
-            totalPop = popDF['pop'].sum()
-            popDF['percentage'] = (popDF['pop'] / totalPop) * 100
-            
-            
-            
-            # table = popDF[['state', 'percentage', 'pop']]
-            
-            # table.rename(columns={
-            #     'state': 'State',
-            #     'pop': 'Population',
-            #     'percentage': 'Percentage'
-            # }, inplace=True)
-            popDF = popDF.sort_values(by='pop', ascending=True)
-            
-            table = go.Table(
-                header=dict(values=['State', 'Percentage (%)', 'Population'],
-                            align='left'),
-                cells=dict(values=[popDF['state'], popDF['percentage'], popDF['pop']],
-                        align='left')
-            )
-            
-            fig = go.Figure(data=[table])
-            
-            st.plotly_chart(fig)
-            
-            st.markdown("The majority of population in Malaysia is from Selangor which is 20.206% with 6,555,100 people while the state with the least population is from Perlis with only 0.788%, 255,500.")
-            
+            st.markdown("[Description: ChanHuanyi]")
         elif selectedChart == "Population of age group":
             popDF = popDF[popDF['state'] == 'Malaysia']
             age_group_values = popDF[['pop_60', 'pop_18', 'pop_12', 'pop_5']].values[0]
@@ -644,97 +609,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("This chart shows that the 69.5% of people in Malaysia is between the ages of 18 – 59. This large range also result in more instances being categorised into this category. From the chart, the age group in range 5-11 is the least age group in Malaysia, with only 9.19%.")
-            
-        elif selectedChart == "Transmission Rate For each Age Group":
-            popDF = popDF[popDF['state'] == 'Malaysia']
-            
-            caseMalaysiaDF['cases_18+'] = caseMalaysiaDF[['cases_18_29', 'cases_30_39', 'cases_40_49', 'cases_50_59']].sum(axis=1)
-            caseMalaysiaDF['cases_60+'] = caseMalaysiaDF[['cases_60_69', 'cases_70_79', 'cases_80']].sum(axis=1)
-            
-            print(caseMalaysiaDF)
-            print(popDF)
-            # case5_11 = pd.DataFrame({
-            #     "Status": ["Infected", "Not Infected"],
-            #     "Amount": [caseMalaysiaDF['cases_5_11'].sum(), (popDF['pop_5'] - caseMalaysiaDF['cases_5_11'].sum())]
-            # })
-            # cases = {
-            #     '5-11': caseMalaysiaDF['cases_5_11'].sum(),
-            #     '12-17': caseMalaysiaDF['cases_12_17'].sum(),
-            #     '18+': caseMalaysiaDF['cases_18+'].sum(),
-            #     '60+': caseMalaysiaDF['cases_60+'].sum()
-            # }
-            
-            # plot_data = pd.DataFrame({
-            #     'Age Group': list(cases.keys()),
-            #     'Cases': list(cases.values()),
-            # })
-            # Get the total cases per new age group
-            cases = {
-                '5-11': caseMalaysiaDF['cases_5_11'].sum(),
-                '12-17': caseMalaysiaDF['cases_12_17'].sum(),
-                '18+': caseMalaysiaDF['cases_18+'].sum(),
-                '60+': caseMalaysiaDF['cases_60+'].sum(),
-            }
-            
-            # Population data for each age group (adjust column names accordingly)
-            pop_data = {
-                '5-11': popDF['pop_5'].sum(),
-                '12-17': popDF['pop_12'].sum(),
-                '18+': popDF[['pop_18']].sum(),
-                '60+': popDF[['pop_60']].sum()
-            }
-
-            # Calculate the number of not infected individuals per age group
-            not_infected = {
-                '5-11': popDF['pop_5'].sum() - cases['5-11'],
-                '12-17': popDF['pop_12'].sum() - cases['12-17'],
-                '18+': popDF['pop_18'].sum() - caseMalaysiaDF['cases_18+'].sum(),
-                '60+': popDF['pop_60'].sum() - caseMalaysiaDF['cases_60+'].sum()
-            }
-            
-            print(cases)
-            print(not_infected)
-
-            # Create DataFrames for each age group for plotting
-            plot_data_5_11 = pd.DataFrame({
-                'Status': ['Infected', 'Not Infected'],
-                'Count': [cases['5-11'], not_infected['5-11']]
-            })
-
-            plot_data_12_17 = pd.DataFrame({
-                'Status': ['Infected', 'Not Infected'],
-                'Count': [cases['12-17'], not_infected['12-17']]
-            })
-
-            plot_data_18_plus = pd.DataFrame({
-                'Status': ['Infected', 'Not Infected'],
-                'Count': [cases['18+'], not_infected['18+']]
-            })
-
-            plot_data_60_plus = pd.DataFrame({
-                'Status': ['Infected', 'Not Infected'],
-                'Count': [cases['60+'], not_infected['60+']]
-            })
-            
-
-            # Plotting the pie charts
-            st.subheader('Age Group 5-11')
-            fig_5_11 = px.pie(plot_data_5_11, values='Count', names='Status', title='COVID-19 Cases in Age Group 5-11')
-            st.plotly_chart(fig_5_11)
-
-            st.subheader('Age Group 12-17')
-            fig_12_17 = px.pie(plot_data_12_17, values='Count', names='Status', title='COVID-19 Cases in Age Group 12-17')
-            st.plotly_chart(fig_12_17)
-
-            st.subheader('Age Group 18+')
-            fig_18_plus = px.pie(plot_data_18_plus, values='Count', names='Status', title='COVID-19 Cases in Age Group 18+')
-            st.plotly_chart(fig_18_plus)
-
-            st.subheader('Age Group 60+')
-            fig_60_plus = px.pie(plot_data_60_plus, values='Count', names='Status', title='COVID-19 Cases in Age Group 60+')
-            st.plotly_chart(fig_60_plus)
-            
+            st.markdown("[Description: ChanHuanyi]")
             
     elif chartVisual == "Area Chart":
         if selectedChart == "State Recovery Cases Over Time (2020-2024)":
@@ -777,7 +652,7 @@ if __name__ == "__main__":
             fig.update_layout(title='State Recovery Cases Over Time (2020-2024)', xaxis_title='Year', yaxis_title='Recovery Cases')
             
             st.plotly_chart(fig)
-            st.markdown("[Description: GohWeiZhang]")
+            st.markdown("The Recovery Cases Over Time 2020 - 2024 region chart provides a thorough overview of the development of COVID-19 recovery cases throughout the states of Malaysia for five years. ")
             
     elif chartVisual == "Linear Regression":
         caseVaxMalaysiaDF['cumulative_vaccinations'] = caseVaxMalaysiaDF['daily'].cumsum()
