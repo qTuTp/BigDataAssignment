@@ -335,7 +335,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: BongKaiMin]")
+            st.markdown("The line chart above depicts the cumulative vaccinations in various states for adolescents and children based on the vaxMalaysia dataset. The x-axis represents the stages of vaccination: First, Second, First booster dose and Second booster dose for people are on the x-axis. The number of vaccinations is shown in millions on the y-axis. ")
     elif chartVisual == "Bar Chart":
         if selectedChart == "Covid-19 Case Distribution across age group":
             caseMalaysiaDF.rename(columns={
@@ -431,7 +431,7 @@ if __name__ == "__main__":
             # Show the plot in Streamlit
             st.plotly_chart(fig)
             
-            st.markdown("[Description: BongKaiMin]")
+            st.markdown("The stacked bar chart above visualizes the total number of COVID-19 cases in each state of Malaysia, categorized by four different age groups. The age groups are child, adolescent, adult, and elderly. The x-axis shows the states, while the y-axis shows the total number of COVID-19 cases. The age groups are represented by different colors such as blue for children, light blue for adolescents, red for adults, and light red for elderly people. ")
             
         elif selectedChart == "Vaccination by State for adolescent and child":
             # Group the data by state and sum the cases for each age group
@@ -594,7 +594,7 @@ if __name__ == "__main__":
             # Show the plot in Streamlit
             st.plotly_chart(fig)
             
-            st.markdown("[Description: BongKaiMin]")
+            st.markdown("The pie chart presenting the types of COVID-19 vaccines administered in Malaysia. The chart employs the use of cumulative frequencies of different vaccines to depict their proportions within the overall vaccination campaign. The available types of vaccines are Pfizer, Sinovac, AstraZeneca, CanSino, and Sinopharm.")
             
         elif selectedChart == "Population For Each State":
             # Remove Malaysia and non state
@@ -855,7 +855,7 @@ if __name__ == "__main__":
         mse = metrics.mean_squared_error(y_test, y_pred)
         rmse = np.sqrt(mse)
         
-        st.markdown("[Description: BongKaiMin]")
+        st.markdown("The linear regressions above show the linear regression model of training and test sets. The regression line depicts the general trend as the cumulative of the vaccinations rises, the new cases of COVID-19 reduce. This inverse relationship is anticipated and suggests that the model is correctly picking up on how vaccinations decrease new cases.")
         
         # Create a table trace for the metrics
         metric_table = go.Table(
