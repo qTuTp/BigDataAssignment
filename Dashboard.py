@@ -63,7 +63,7 @@ if __name__ == "__main__":
                       "Vaccination Stage for adolescent and child", "Covid-19 Active Cases and Cummulative Vaccination in Overall"],
         "Bar Chart":["Covid-19 Case Distribution across age group", "Total Vaccination by State", "Covid-19 Cases by state in age group", 
                      "Vaccination by State for adolescent and child", "Population For each state"],
-        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination", "Linear Regression for Daily Covid-19 Cases and Amount of Vaccination"],
+        "Scatter Plot":["Covid-19 Cases vs Daily Vaccination"],
         "Pie Chart":["Active Covid-19 Case by age group", "Distribution of Vaccine Type", "Population For Each State", "Population of age group"],
         "Area Chart":["State Recovery Cases Over Time (2020-2024)"],
         "Linear Regression":["Linear Regression for Daily Covid-19 Cases and Cummulative Vaccination"]
