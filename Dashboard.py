@@ -166,7 +166,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The first year's vaccine effort reaches its peaks in July 2021 with 600,000 doses provided. This peak indicates that an aggressive first vaccination programme to stop the spread of COVID-19 is required. Simultaneously, the annual total of new and recovered COVID-19 cases stays low and constant at less than 5,000. ")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2022":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -189,7 +189,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The second year has a peak of 250,000 vaccinations in March 2022, followed by a sharp decrease to less than 5,000 by July 2022. March 2022 shows a little increase in new and recovered cases at this time, but they still fall short of 10,000. This slight increase in incidence in spite of the vaccination campaign's decrease indicates that, even if the vaccination programme slowed, a serious outbreak was still avoided.")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2023":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -212,7 +212,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The number of vaccinations in 2023 peaks at 12,000 in January and falls to less than 1,000 by May. November 2023 shows an increase in new and recovered cases throughout the year, eventually reaching 6,000. There may be a relationship between the decrease in vaccination efforts and the rise in new infections and recoveries, as evidenced by the coincidence between the increase in cases and the decline in vaccination rates towards the end of the year.")
         elif selectedChart == "New Covid-19 Cases, Recoveries and Vaccination in 2024":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
             vaxMalaysiaDF['date'] = pd.to_datetime(vaxMalaysiaDF['date'])
@@ -235,7 +235,7 @@ if __name__ == "__main__":
             
             st.plotly_chart(fig)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("In January 2024, there are 3,000 new and recovered cases. However, at February 2024 the total has dropped dramatically to less than 500. In 2024, vaccination rates stay below 500 throughout the entire year. Despite the low vaccination rates, the decrease in cases at the start of the year implies that efficient control measures were reinstated. ")
             
         elif selectedChart == "Covid-19 Active Cases and Cummulative Vaccination in Overall":
             caseMalaysiaDF['date'] = pd.to_datetime(caseMalaysiaDF['date'])
@@ -300,7 +300,7 @@ if __name__ == "__main__":
             
             # st.pyplot(fig)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The Trends in New and Recovered COVID-19 Cases line chart offers an in-depth analysis of the changes in officially reported COVID-19 cases and recoveries between July 2020 and January 2024. The x-axis tracks trends over the period July 2020 to January 2024. The y-axis displays the total number of  cases, with separate lines for newly identified COVID-19 cases and recovered cases. ")
         elif selectedChart == "Vaccination Stage for adolescent and child":
             fig = go.Figure()
             # Extract relevant data for the stages of vaccination for adolescents and children
@@ -376,7 +376,7 @@ if __name__ == "__main__":
                                 title='Total Vaccinations by State')
             st.plotly_chart(state_chart)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The Total COVID-19 Vaccinations by State in Malaysia bar chart offers a comparison of the vaccinations programmes in Malaysia's various states. The states of Malaysia are presented on the x-axis, while the total number of vaccines given is displayed on the y-axis. ")
             
         elif selectedChart == "Covid-19 Cases by state in age group":
             caseStateDF['date'] = pd.to_datetime(caseStateDF['date'])
@@ -514,7 +514,7 @@ if __name__ == "__main__":
                                     title='New COVID-19 Cases vs Daily Vaccinations')
             st.plotly_chart(scatter_chart)
             
-            st.markdown("[Description: TanYanWai]")
+            st.markdown("The scatter plot New COVID-19 Cases and Daily Vaccinations shows the relationship between the daily count of new COVID-19 cases show at the y-axis and the number of COVID-19 vaccination doses shows at the x-axis. Higher values indicate more comprehensive vaccination campaigns or higher vaccination rates during a particular period. Each point on the x-axis represents a certain day's vaccination efforts. The daily total of new reported COVID-19 cases is represented by each point on the y-axis greater values relate to more new infections reported on those days.")
             
     elif chartVisual == "Pie Chart":
         if selectedChart == "Active Covid-19 Case by age group":
